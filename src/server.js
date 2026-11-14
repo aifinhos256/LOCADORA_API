@@ -10,7 +10,7 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const swaggerDocument = require('../swagger-output.json');
 import cors from 'cors';
-
+import path from 'path';
 
 const app = express();
 
@@ -19,8 +19,9 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('🚗 Locadora API online! Acesse /api-docs para ver a documentação.');
+  res.sendFile(path.resolve('index.html'));
 });
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
