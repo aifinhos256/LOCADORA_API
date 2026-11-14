@@ -1,5 +1,4 @@
 import User from '../models/User.js';
-import crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
@@ -9,7 +8,6 @@ class UserController {
             const hashSenha = await bcrypt.hash(req.body.password, 10);
 
             const userToCreate = {
-                id: crypto.randomUUID(),
                 name: req.body.name,
                 age: req.body.age,
                 email: req.body.email,
@@ -31,7 +29,6 @@ class UserController {
             const hashSenha = await bcrypt.hash(req.body.password, 10);
 
             const userToCreate = {
-                id: crypto.randomUUID(),
                 name: req.body.name,
                 age: req.body.age,
                 email: req.body.email,

@@ -2,6 +2,7 @@ import express from "express";
 import UserController from "./controllers/userController.js";
 import VehicleController from "./controllers/vehicleController.js";
 import RentalController from "./controllers/rentalController.js";
+import PaymentController from "./controllers/paymentController.js";
 import authMiddleware from "./database/middlewares/auth.js";
 import adminMiddleware from './database/middlewares/adminMiddleware.js';
 
@@ -29,5 +30,12 @@ router.post('/alugar', authMiddleware, RentalController.create);
 router.get('/alugueis/todos', authMiddleware, adminMiddleware, RentalController.index);
 router.delete('/alugueis/cancelar/:id', authMiddleware, RentalController.cancel);
 
+// ROTAS DE PAGAMENTO
+router.get('/pagamentos/relatorio', PaymentController.relatorio);
+router.post('/pagamentos', PaymentController.create);
+router.get('/pagamentos', PaymentController.getAll);
+router.get('/pagamentos/:id', PaymentController.getById);
+router.put('/pagamentos/:id', PaymentController.update);
+router.delete('/pagamentos/:id', PaymentController.delete);
 
 export default router

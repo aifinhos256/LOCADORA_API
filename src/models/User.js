@@ -4,6 +4,11 @@ class User extends Model {
     static init(sequelize) {
         super.init(
             {
+                id: {
+                    type: Sequelize.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
+                },
                 name: {
                     type: Sequelize.STRING,
                     allowNull: false,

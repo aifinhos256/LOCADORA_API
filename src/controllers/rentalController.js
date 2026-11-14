@@ -1,7 +1,6 @@
 import Rental from '../models/Rental.js';
 import Vehicle from '../models/Vehicle.js'; 
 import User from "../models/User.js";
-import crypto from 'node:crypto';
 
 class RentalController {
     async create(req, res) {
@@ -23,7 +22,6 @@ class RentalController {
         }
 
         const rentalToCreate = {
-            id: crypto.randomUUID(), 
             ...req.body,
         };
 
