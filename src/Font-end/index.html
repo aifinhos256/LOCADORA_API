@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Testes — LOCADORA_API</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-2: #334155;
+      --border: #475569;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --admin: #a855f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    .container { max-width: 1280px; margin: 0 auto; }
+
+    /* Header & Config */
+    header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title-area h1 { font-size: 1.35rem; display: flex; align-items: center; gap: 10px; }
+    .badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-admin { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border: 1px solid var(--admin); }
+    .badge-auth { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid var(--primary); }
+    .badge-pub { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid var(--success); }
+
+    .url-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .url-bar input { width: 320px; }
+
+    /* Auth Status Banner */
+    .session-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .session-info { font-size: 0.9rem; color: var(--muted); }
+    .session-info strong { color: var(--text); }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .tab-btn {
+      background: var(--surface);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .tab-btn:hover { color: var(--text); border-color: var(--primary); }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* Layout Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    .panel { display: none; }
+    .panel.active { display: grid; gap: 16px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .card-header h3 { font-size: 1rem; }
+    .endpoint-tag {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: var(--bg);
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: #cbd5e1;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
+    input, select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--primary); }
+
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    button.action {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    button.action:hover { background: var(--primary-hover); }
+    button.btn-admin { background: var(--admin); }
+    button.btn-admin:hover { background: #9333ea; }
+    button.btn-success { background: var(--success); color: #064e3b; }
+    button.btn-danger { background: var(--danger); }
+    button.btn-secondary { background: var(--surface-2); }
+
+    /* Response Console */
+    .console-card {
+      position: sticky;
+      top: 20px;
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .console-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--surface-2);
+    }
+
+    .status-pill {
+      font-family: monospace;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      background: var(--surface-2);
+    }
+    .status-ok { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .status-err { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+    #resumo-box {
+      display: none;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'Consolas', monospace;
+      font-size: 0.83rem;
+      color: #e2e8f0;
+      max-height: 560px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title-area">
+        <h1>LOCADORA_API <span class="badge badge-pub">Painel de Testes</span></h1>
+        <small style="color: var(--muted)">Validação de CRUD, JWT, Permissões Admin/Cliente, Pagamentos Divididos e Seguros</small>
+      </div>
+      <div class="url-bar">
+        <input type="text" id="baseUrl" value="https://locadora-api-k59p.onrender.com" />
+        <button class="action btn-secondary" onclick="setBaseUrl('https://locadora-api-k59p.onrender.com')">Render</button>
+        <button class="action btn-secondary" onclick="setBaseUrl('http://localhost:3000')">Localhost</button>
+      </div>
+    </header>
+
+    <div class="session-bar">
+      <div class="session-info" id="sessionStatus">
+        Status: <strong>Não autenticado (Visitante)</strong>
+      </div>
+      <div class="btn-row">
+        <button class="action btn-admin" onclick="quickLogin('grazynoronha08@alu.ufc.br', '123456')">Login Rápido Admin (Grazy)</button>
+        <button class="action" onclick="quickLogin('sofia@locadora.com', '123456')">Login Rápido Cliente (Sofia)</button>
+        <button class="action btn-danger" onclick="logout()">Sair</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('tab-users', this)">1. Login & Usuários</button>
+      <button class="tab-btn" onclick="openTab('tab-vehicles', this)">2. Veículos</button>
+      <button class="tab-btn" onclick="openTab('tab-rentals', this)">3. Aluguéis</button>
+      <button class="tab-btn" onclick="openTab('tab-payments', this)">4. Pagamentos</button>
+      <button class="tab-btn" onclick="openTab('tab-insurances', this)">5. Seguros</button>
+    </div>
+
+    <div class="main-grid">
+      <!-- COLUNA ESQUERDA: FORMULÁRIOS -->
+      <div>
+        <!-- ABA 1: USUÁRIOS -->
+        <div id="tab-users" class="panel active">
+          <div class="card">
+            <div class="card-header">
+              <h3>Autenticar Usuário</h3>
+              <div><span class="badge badge-pub">Público</span> <span class="endpoint-tag">POST /login</span></div>
+            </div>
+            <div class="form-grid">
+              <div><label>E-mail</label><input type="email" id="loginEmail" value="grazynoronha08@alu.ufc.br" /></div>
+              <div><label>Senha</label><input type="password" id="loginPass" value="123456" /></div>
+            </div>
+            <button class="action" onclick="login()">Entrar e Salvar Token</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Cadastrar Novo Cliente</h3>
+              <div><span class="badge badge-pub">Público</span> <span class="endpoint-tag">POST /cadastro/cliente</span></div>
+            </div>
+            <div class="form-grid">
+              <div><label>Nome</label><input type="text" id="regName" placeholder="Ex: Pedro Alves" /></div>
+              <div><label>Idade</label><input type="number" id="regAge" value="25" /></div>
+              <div><label>E-mail</label><input type="email" id="regEmail" placeholder="pedro@email.com" /></div>
+              <div><label>Senha</label><input type="password" id="regPass" value="123456" /></div>
+            </div>
+            <button class="action btn-success" onclick="registerUser()">Cadastrar Cliente</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Gerenciar Usuários</h3>
+              <div><span class="badge badge-admin">Admin</span> <span class="endpoint-tag">/usuarios/...</span></div>
+            </div>
+            <div class="btn-row" style="margin-bottom: 12px;">
+              <button class="action btn-admin" onclick="apiRequest('GET', '/usuarios/todos')">Listar Todos Usuários</button>
+            </div>
+            <div class="form-grid">
+              <div><label>ID do Usuário para Deletar</label><input type="number" id="delUserId" placeholder="Ex: 4" /></div>
+            </div>
+            <button class="action btn-danger" onclick="deleteUser()">Deletar Usuário (Próprio ou Admin)</button>
+          </div>
+        </div>
+
+        <!-- ABA 2: VEÍCULOS -->
+        <div id="tab-vehicles" class="panel">
+          <div class="card">
+            <div class="card-header">
+              <h3>Catálogo de Veículos</h3>
+              <div><span class="badge badge-pub">Público</span> <span class="endpoint-tag">GET /veiculos/todos</span></div>
+            </div>
+            <button class="action" onclick="apiRequest('GET', '/veiculos/todos')">Listar Todos os Veículos</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Cadastrar Veículo (com Placa)</h3>
+              <div><span class="badge badge-admin">Admin</span> <span class="endpoint-tag">POST /veiculos</span></div>
+            </div>
+            <div class="form-grid">
+              <div><label>Marca</label><input type="text" id="vMarca" placeholder="Ex: Chevrolet" /></div>
+              <div><label>Modelo</label><input type="text" id="vModelo" placeholder="Ex: Onix Premier" /></div>
+              <div><label>Ano</label><input type="number" id="vAno" value="2025" /></div>
+              <div><label>Placa (Obrigatória)</label><input type="text" id="vPlaca" placeholder="Ex: ABC1D23" /></div>
+              <div><label>Valor Diária (R$)</label><input type="number" step="0.01" id="vValor" value="150.00" /></div>
+            </div>
+            <button class="action btn-admin" onclick="createVehicle()">Cadastrar Veículo</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Editar / Remover Veículo</h3>
+              <div><span class="badge badge-admin">Admin</span> <span class="endpoint-tag">/veiculos/:id</span></div>
+            </div>
+            <div class="form-grid">
+              <div><label>ID do Veículo</label><input type="number" id="editVehicleId" placeholder="Ex: 1" /></div>
+              <div><label>Novo Valor Diária (R$)</label><input type="number" step="0.01" id="editVehicleValor" placeholder="230.00" /></div>
+            </div>
+            <div class="btn-row">
+              <button class="action btn-admin" onclick="updatVehicle()">Atualizar Diária</button>
+              <button class="action btn-danger" onclick="deleteVehicle()">Deletar Veículo</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 3: ALUGUÉIS -->
+        <div id="tab-rentals" class="panel">
+          <div class="card">
+            <div class="card-header">
+              <h3>Criar Novo Aluguel</h3>
+              <div><span class="badge badge-auth">Logado</span> <span class="endpoint-tag">POST /alugueis</span></div>
+            </div>
+            <div class="form-grid">
+              <div><label>ID Usuário (auto-preenchido ao logar)</label><input type="number" id="rUserId" value="1" /></div>
+              <div><label>ID Veículo (1 a 5)</label><input type="number" id="rVehicleId" value="5" /></div>
+              <div><label>Data Início</label><input type="date" id="rInicio" /></div>
+              <div><label>Data Fim</label><input type="date" id="rFim" /></div>
+            </div>
+            <button class="action" onclick="createRental()">Registrar Aluguel</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Consultas e Cancelamento de Aluguel</h3>
+              <div><span class="badge badge-auth">Logado / Admin</span></div>
+            </div>
+            <div class="btn-row" style="margin-bottom: 12px;">
+              <button class="action btn-admin" onclick="apiRequest('GET', '/alugueis/todos')">Listar Todos (Admin)</button>
+            </div>
+            <div class="form-grid">
+              <div><label>ID do Aluguel para Cancelar</label><input type="number" id="cancelRentalId" placeholder="Ex: 11" /></div>
+            </div>
+            <button class="action btn-danger" onclick="cancelRental()">Cancelar Aluguel (PATCH)</button>
+          </div>
+        </div>
+
+        <!-- ABA 4: PAGAMENTOS -->
+        <div id="tab-payments" class="panel">
+          <div class="card">
+            <div class="card-header">
+              <h3>Registrar Pagamento (À Vista ou Dividido)</h3>
+              <div><span class="badge badge-auth">Logado</span> <span class="endpoint-tag">POST /pagamentos</span></div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px;">
+              Dica: Crie um aluguel novo (ex: ID 11), lance metade do valor no <strong>Dinheiro</strong> e depois lance o restante no <strong>Cartão</strong> para testar a quitação parcial.
+            </p>
+            <div class="form-grid">
+              <div><label>ID do Aluguel (rental_id)</label><input type="number" id="pRentalId" placeholder="Ex: 11" /></div>
+              <div><label>Valor (R$)</label><input type="number" step="0.01" id="pValor" placeholder="Ex: 200.00" /></div>
+              <div><label>Data</label><input type="date" id="pData" /></div>
+              <div>
+                <label>Método de Pagamento</label>
+                <select id="pMetodo">
+                  <option value="PIX">PIX</option>
+                  <option value="Cartão de Crédito">Cartão de Crédito</option>
+                  <option value="Cartão de Débito">Cartão de Débito</option>
+                  <option value="Dinheiro">Dinheiro</option>
+                </select>
+              </div>
+            </div>
+            <button class="action btn-success" onclick="createPayment()">Registrar Pagamento</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Relatórios e Consultas Financeiras</h3>
+              <div><span class="badge badge-admin">Admin</span></div>
+            </div>
+            <div class="btn-row" style="margin-bottom: 12px;">
+              <button class="action btn-admin" onclick="apiRequest('GET', '/pagamentos/relatorio')">Relatório SQL (JOIN)</button>
+              <button class="action btn-admin" onclick="apiRequest('GET', '/pagamentos/listar')">Listar Todos Pagamentos</button>
+            </div>
+            <div class="form-grid">
+              <div><label>ID do Pagamento</label><input type="number" id="pSearchId" placeholder="Ex: 1" /></div>
+            </div>
+            <div class="btn-row">
+              <button class="action" onclick="getPaymentById()">Buscar por ID (Dono/Admin)</button>
+              <button class="action btn-danger" onclick="deletePayment()">Deletar Pagamento (Admin)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 5: SEGUROS -->
+        <div id="tab-insurances" class="panel">
+          <div class="card">
+            <div class="card-header">
+              <h3>Contratar Seguro para Aluguel</h3>
+              <div><span class="badge badge-auth">Logado</span> <span class="endpoint-tag">POST /seguros</span></div>
+            </div>
+            <div class="form-grid">
+              <div><label>ID do Aluguel (aluguel_id)</label><input type="number" id="sAluguelId" placeholder="Ex: 11" /></div>
+              <div>
+                <label>Tipo de Seguro</label>
+                <select id="sTipo">
+                  <option value="Completo">Completo</option>
+                  <option value="Terceiros">Terceiros</option>
+                  <option value="Vidros e Roubo">Vidros e Roubo</option>
+                  <option value="Básico">Básico</option>
+                </select>
+              </div>
+              <div><label>Valor (R$)</label><input type="number" step="0.01" id="sValor" value="120.00" /></div>
+            </div>
+            <button class="action btn-success" onclick="createInsurance()">Contratar Seguro</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Consultar, Cancelar ou Gerar Relatório de Seguros</h3>
+              <div><span class="badge badge-auth">Logado</span> <span class="badge badge-admin">Relatório Admin</span></div>
+            </div>
+            <div class="btn-row" style="margin-bottom: 12px;">
+              <button class="action btn-admin" onclick="apiRequest('GET', '/seguros/relatorio')">Relatório Seguros Ativos (COUNT)</button>
+            </div>
+            <div class="form-grid">
+              <div><label>ID do Seguro</label><input type="number" id="sId" placeholder="Ex: 1" /></div>
+            </div>
+            <div class="btn-row">
+              <button class="action" onclick="showInsurance()">Buscar Seguro (GET)</button>
+              <button class="action btn-danger" onclick="cancelInsurance()">Cancelar Seguro (PATCH)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUNA DIREITA: RESPOSTA DA API -->
+      <div class="console-card">
+        <div class="console-top">
+          <div>
+            <strong id="reqInfo">Aguardando requisição...</strong>
+          </div>
+          <span id="statusBadge" class="status-pill">---</span>
+        </div>
+
+        <div id="resumo-box"></div>
+
+        <pre id="responseOutput">{
+  "dica": "Clique em 'Login Rápido Admin' no topo para autenticar e testar todas as rotas."
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let token = localStorage.getItem('locadora_token') || '';
+
+    // Inicializa datas padrão (hoje e +3 dias)
+    const today = new Date();
+    const plus3 = new Date(today);
+    plus3.setDate(today.getDate() + 3);
+    document.getElementById('rInicio').value = today.toISOString().split('T')[0];
+    document.getElementById('rFim').value = plus3.toISOString().split('T')[0];
+    document.getElementById('pData').value = today.toISOString().split('T')[0];
+
+    function setBaseUrl(url) {
+      document.getElementById('baseUrl').value = url;
+    }
+
+    function openTab(tabId, btn) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    function parseJwt(t) {
+      try {
+        const base64Url = t.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(atob(base64));
+      } catch {
+        return null;
+      }
+    }
+
+    function updateSessionUI() {
+      const el = document.getElementById('sessionStatus');
+      if (!token) {
+        el.innerHTML = 'Status: <strong>Não autenticado (Visitante)</strong>';
+        return;
+      }
+      const payload = parseJwt(token);
+      if (payload) {
+        const uid = payload.id || payload.userId || '?';
+        const role = payload.is_admin ? 'ADMINISTRADORA' : 'CLIENTE';
+        el.innerHTML = `Status: <strong>Logado (ID: ${uid} | Perfil: ${role})</strong>`;
+        if (uid !== '?') document.getElementById('rUserId').value = uid;
+      } else {
+        el.innerHTML = 'Status: <strong>Token JWT ativo</strong>';
+      }
+    }
+
+    function logout() {
+      token = '';
+      localStorage.removeItem('locadora_token');
+      updateSessionUI();
+      document.getElementById('resumo-box').style.display = 'none';
+      document.getElementById('reqInfo').innerText = 'Sessão encerrada';
+      document.getElementById('statusBadge').innerText = 'LOGOUT';
+      document.getElementById('statusBadge').className = 'status-pill';
+      document.getElementById('responseOutput').innerText = '{"mensagem": "Token removido com sucesso."}';
+    }
+
+    async function apiRequest(method, path, body = null) {
+      const baseUrl = document.getElementById('baseUrl').value.replace(/\/$/, '');
+      const fullUrl = `${baseUrl}${path}`;
+
+      document.getElementById('reqInfo').innerText = `${method} ${path}`;
+      document.getElementById('statusBadge').innerText = 'Carregando...';
+      document.getElementById('statusBadge').className = 'status-pill';
+      document.getElementById('resumo-box').style.display = 'none';
+
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      try {
+        const res = await fetch(fullUrl, {
+          method,
+          headers,
+          body: body ? JSON.stringify(body) : null,
+        });
+
+        const data = await res.json().catch(() => ({}));
+        const badge = document.getElementById('statusBadge');
+        badge.innerText = `${res.status} ${res.statusText}`;
+        badge.className = res.ok ? 'status-pill status-ok' : 'status-pill status-err';
+
+        // Salva token automaticamente se for login
+        if (path === '/login' && res.ok && data.token) {
+          token = data.token;
+          localStorage.setItem('locadora_token', token);
+          updateSessionUI();
+        }
+
+        // Destaca o resumo financeiro no pagamento dividido
+        if (data.resumo_financeiro) {
+          const r = data.resumo_financeiro;
+          const box = document.getElementById('resumo-box');
+          box.style.display = 'block';
+          box.innerHTML = `
+            <strong>Resumo Financeiro do Aluguel:</strong><br/>
+            Total do Contrato: <strong>R$ ${Number(r.valor_total_aluguel).toFixed(2)}</strong> | 
+            Total Pago: <strong>R$ ${Number(r.total_pago).toFixed(2)}</strong> | 
+            Falta Pagar: <strong>R$ ${Number(r.falta_pagar).toFixed(2)}</strong> | 
+            Status: <strong>${r.quitado ? 'QUITADO ✅' : 'PAGAMENTO PARCIAL ⏳'}</strong>
+          `;
+        }
+
+        document.getElementById('responseOutput').innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        const badge = document.getElementById('statusBadge');
+        badge.innerText = 'ERRO DE REDE';
+        badge.className = 'status-pill status-err';
+        document.getElementById('responseOutput').innerText = JSON.stringify({
+          erro: 'Falha ao conectar com a API.',
+          detalhe: err.message,
+          dica: 'Se a API no Render estava dormindo, aguarde 30 segundos e tente novamente.'
+        }, null, 2);
+      }
+    }
+
+    // Funções dos formulários
+    function quickLogin(email, password) {
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPass').value = password;
+      login();
+    }
+
+    function login() {
+      apiRequest('POST', '/login', {
+        email: document.getElementById('loginEmail').value,
+        password: document.getElementById('loginPass').value,
+      });
+    }
+
+    function registerUser() {
+      apiRequest('POST', '/cadastro/cliente', {
+        name: document.getElementById('regName').value,
+        age: Number(document.getElementById('regAge').value),
+        email: document.getElementById('regEmail').value,
+        password: document.getElementById('regPass').value,
+      });
+    }
+
+    function deleteUser() {
+      const id = document.getElementById('delUserId').value;
+      apiRequest('DELETE', `/usuarios/deletar/${id}`);
+    }
+
+    function createVehicle() {
+      apiRequest('POST', '/veiculos', {
+        marca: document.getElementById('vMarca').value,
+        modelo: document.getElementById('vModelo').value,
+        ano: Number(document.getElementById('vAno').value),
+        placa: document.getElementById('vPlaca').value,
+        valor: Number(document.getElementById('vValor').value),
+      });
+    }
+
+    function updateVehicle() {
+      const id = document.getElementById('editVehicleId').value;
+      apiRequest('PUT', `/atualizar/${id}`, {
+        valor: Number(document.getElementById('editVehicleValor').value),
+      });
+    }
+
+    function deleteVehicle() {
+      const id = document.getElementById('editVehicleId').value;
+      apiRequest('DELETE', `/veiculos/deletar/${id}`);
+    }
+
+    function createRental() {
+      apiRequest('POST', '/alugar', {
+        usuario_id: Number(document.getElementById('rUserId').value),
+        veiculo_id: Number(document.getElementById('rVehicleId').value),
+        data_inicio: document.getElementById('rInicio').value,
+        data_fim: document.getElementById('rFim').value,
+      });
+    }
+
+    function cancelRental() {
+      const id = document.getElementById('cancelRentalId').value;
+      apiRequest('DELETE', `/alugueis/cancelar/${id}`);
+    }
+    
+    function createPayment() {
+      apiRequest('POST', '/pagamentos', {
+        rental_id: Number(document.getElementById('pRentalId').value),
+        valor: Number(document.getElementById('pValor').value),
+        data: document.getElementById('pData').value,
+        metodo_pagamento: document.getElementById('pMetodo').value,
+      });
+    }
+
+    function getPaymentById() {
+      const id = document.getElementById('pSearchId').value;
+      apiRequest('GET', `/pagamentos/${id}`);
+    }
+
+    function deletePayment() {
+      const id = document.getElementById('pSearchId').value;
+      apiRequest('DELETE', `/pagamentos/${id}`);
+    }
+
+    function createInsurance() {
+      apiRequest('POST', '/seguros', {
+        aluguel_id: Number(document.getElementById('sAluguelId').value),
+        tipo_seguro: document.getElementById('sTipo').value,
+        valor: Number(document.getElementById('sValor').value),
+      });
+    }
+
+    function showInsurance() {
+      const id = document.getElementById('sId').value;
+      apiRequest('GET', `/seguros/${id}`);
+    }
+
+    function cancelInsurance() {
+      const id = document.getElementById('sId').value;
+      apiRequest('PATCH', `/seguros/cancelar/${id}`);
+    }
+
+    updateSessionUI();
+  </script>
+</body>
+</html>

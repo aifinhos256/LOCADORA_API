@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Locadora API",
-    "description": "Documentação da API de Gestão e Aluguel de Veículos",
+    "description": "Documentação da API de Gestão e Aluguel de Veículos — com autenticação JWT, controle de acesso (Admin/Cliente), pagamentos parciais/divididos e seguros.",
     "version": "1.0.0"
   },
   "host": "locadora-api-k59p.onrender.com",
@@ -10,28 +10,66 @@
   "schemes": [
     "https"
   ],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Insira: Bearer <seu_token_jwt>"
+    }
+  },
+  "tags": [
+    {
+      "name": "Usuários",
+      "description": "Cadastro, autenticação e gerenciamento de contas"
+    },
+    {
+      "name": "Veículos",
+      "description": "Consulta pública e gerenciamento administrativo da frota"
+    },
+    {
+      "name": "Aluguéis",
+      "description": "Reserva, listagem e cancelamento de aluguéis"
+    },
+    {
+      "name": "Pagamentos",
+      "description": "Quitação integral ou dividida, estorno e relatório SQL (JOIN)"
+    },
+    {
+      "name": "Seguros",
+      "description": "Contratação, consulta, cancelamento e relatório de apólices ativas"
+    }
+  ],
   "paths": {
     "/cadastro/administrador": {
       "post": {
-        "description": "",
+        "tags": ["Usuários"],
+        "summary": "Cadastrar novo administrador",
+        "description": "Cria um usuário com permissão administrativa (is_admin: true).",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
+              "required": ["name", "age", "email", "password"],
               "properties": {
-                "password": {
-                  "example": "any"
-                },
                 "name": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "Grazielly Noronha Sousa"
                 },
                 "age": {
-                  "example": "any"
+                  "type": "integer",
+                  "example": 20
                 },
                 "email": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "admin@locadora.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "123456"
                 }
               }
             }
@@ -39,35 +77,43 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Administrador cadastrado com sucesso"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Erro de validação ou e-mail já cadastrado"
           }
         }
       }
     },
     "/cadastro/cliente": {
       "post": {
-        "description": "",
+        "tags": ["Usuários"],
+        "summary": "Cadastrar novo cliente (Público)",
+        "description": "Cria uma conta comum de cliente (is_admin: false).",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
+              "required": ["name", "age", "email", "password"],
               "properties": {
-                "password": {
-                  "example": "any"
-                },
                 "name": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "Pedro Alves"
                 },
                 "age": {
-                  "example": "any"
+                  "type": "integer",
+                  "example": 25
                 },
                 "email": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "pedro@locadora.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "123456"
                 }
               }
             }
@@ -75,29 +121,35 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Cliente cadastrado com sucesso"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Erro de validação ou e-mail já cadastrado"
           }
         }
       }
     },
     "/login": {
       "post": {
-        "description": "",
+        "tags": ["Usuários"],
+        "summary": "Autenticar usuário e gerar token JWT (Público)",
+        "description": "Valida e-mail e senha e retorna o token JWT para uso nas rotas protegidas.",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
+              "required": ["email", "password"],
               "properties": {
                 "email": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "grazynoronha08@alu.ufc.br"
                 },
                 "password": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "123456"
                 }
               }
             }
@@ -105,246 +157,122 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Autenticado com sucesso (retorna token JWT)"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Senha incorreta"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Usuário não encontrado"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Erro interno no servidor"
           }
         }
       }
     },
     "/usuarios/todos": {
       "get": {
-        "description": "",
-        "parameters": [
+        "tags": ["Usuários"],
+        "summary": "Listar todos os usuários (Apenas Admin)",
+        "description": "Retorna todos os clientes e administradores cadastrados.",
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "Bearer": []
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Lista de usuários retornada com sucesso"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Token não fornecido ou inválido"
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Acesso negado (requer privilégio de administrador)"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Erro interno no servidor"
           }
         }
       }
     },
     "/usuarios/deletar/{id}": {
       "delete": {
-        "description": "",
+        "tags": ["Usuários"],
+        "summary": "Deletar usuário (Próprio usuário ou Admin)",
+        "description": "Permite que o usuário apague a própria conta ou que um administrador remova qualquer conta.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "type": "integer",
+            "example": 4
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Usuário removido com sucesso"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Não autenticado"
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Acesso negado"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Usuário não encontrado"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Erro interno no servidor"
           }
         }
       }
     },
     "/veiculos": {
       "post": {
-        "description": "",
-        "parameters": [
+        "tags": ["Veículos"],
+        "summary": "Cadastrar novo veículo (Apenas Admin)",
+        "description": "Adiciona um novo veículo à frota da locadora.",
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "Bearer": []
           }
         ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/atualizar/{id}": {
-      "put": {
-        "description": "",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/veiculos/deletar/{id}": {
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/veiculos/todos": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/buscar/{identificador}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "identificador",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/alugar": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
+              "required": ["marca", "modelo", "ano", "placa", "valor"],
               "properties": {
-                "usuario_id": {
-                  "example": "any"
+                "marca": {
+                  "type": "string",
+                  "example": "Chevrolet"
                 },
-                "veiculo_id": {
-                  "example": "any"
+                "modelo": {
+                  "type": "string",
+                  "example": "Onix Premier"
                 },
-                "data_inicio": {
-                  "example": "any"
+                "ano": {
+                  "type": "integer",
+                  "example": 2025
                 },
-                "data_fim": {
-                  "example": "any"
+                "placa": {
+                  "type": "string",
+                  "example": "ABC1D23"
+                },
+                "valor": {
+                  "type": "number",
+                  "example": 150.00
                 }
               }
             }
@@ -352,80 +280,755 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Veículo cadastrado com sucesso"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Dados inválidos ou placa já cadastrada"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Não autenticado"
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Acesso negado (requer Admin)"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/atualizar/{id}": {
+      "put": {
+        "tags": ["Veículos"],
+        "summary": "Atualizar dados de um veículo (Apenas Admin)",
+        "description": "Edita informações ou valor da diária de um veículo existente.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "example": 1
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "marca": {
+                  "type": "string",
+                  "example": "Toyota"
+                },
+                "modelo": {
+                  "type": "string",
+                  "example": "Corolla XEi"
+                },
+                "ano": {
+                  "type": "integer",
+                  "example": 2024
+                },
+                "placa": {
+                  "type": "string",
+                  "example": "POX1A23"
+                },
+                "valor": {
+                  "type": "number",
+                  "example": 230.00
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículo atualizado com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado (requer Admin)"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Veículo não encontrado"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/veiculos/deletar/{id}": {
+      "delete": {
+        "tags": ["Veículos"],
+        "summary": "Remover veículo da frota (Apenas Admin)",
+        "description": "Exclui um veículo pelo ID.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "example": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículo removido com sucesso"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado (requer Admin)"
+          },
+          "404": {
+            "description": "Veículo não encontrado"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/veiculos/todos": {
+      "get": {
+        "tags": ["Veículos"],
+        "summary": "Listar todos os veículos (Público)",
+        "description": "Exibe o catálogo completo de veículos cadastrados.",
+        "responses": {
+          "200": {
+            "description": "Lista de veículos retornada com sucesso"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/buscar/{identificador}": {
+      "get": {
+        "tags": ["Veículos"],
+        "summary": "Buscar veículo por ID, marca ou modelo (Público)",
+        "description": "Consulta um veículo específico pelo identificador informado na URL.",
+        "parameters": [
+          {
+            "name": "identificador",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "example": "Corolla"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículo encontrado"
+          },
+          "404": {
+            "description": "Veículo não encontrado"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/alugar": {
+      "post": {
+        "tags": ["Aluguéis"],
+        "summary": "Registrar novo aluguel (Usuário Logado)",
+        "description": "Cria uma locação vinculando um usuário a um veículo no período informado.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["usuario_id", "veiculo_id", "data_inicio", "data_fim"],
+              "properties": {
+                "usuario_id": {
+                  "type": "integer",
+                  "example": 2
+                },
+                "veiculo_id": {
+                  "type": "integer",
+                  "example": 5
+                },
+                "data_inicio": {
+                  "type": "string",
+                  "example": "2026-11-15"
+                },
+                "data_fim": {
+                  "type": "string",
+                  "example": "2026-11-18"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Aluguel criado com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos ou veículo indisponível"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado"
+          },
+          "404": {
+            "description": "Usuário ou veículo não encontrado"
           }
         }
       }
     },
     "/alugueis/todos": {
       "get": {
-        "description": "",
-        "parameters": [
+        "tags": ["Aluguéis"],
+        "summary": "Listar todos os aluguéis (Apenas Admin)",
+        "description": "Retorna todos os aluguéis registrados no sistema.",
+        "security": [
           {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "Bearer": []
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Lista de aluguéis"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Não autenticado"
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Acesso negado (requer Admin)"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Erro interno no servidor"
           }
         }
       }
     },
     "/alugueis/cancelar/{id}": {
       "delete": {
-        "description": "",
+        "tags": ["Aluguéis"],
+        "summary": "Cancelar aluguel (Dono do aluguel ou Admin)",
+        "description": "Cancela um aluguel existente, permitindo ação apenas ao cliente titular ou a um administrador.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
+            "type": "integer",
+            "example": 10
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Aluguel cancelado com sucesso"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Não autenticado"
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Acesso negado"
           },
           "404": {
-            "description": "Not Found"
+            "description": "Aluguel não encontrado"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/pagamentos/relatorio": {
+      "get": {
+        "tags": ["Pagamentos"],
+        "summary": "Relatório financeiro em SQL puro (INNER JOIN) (Apenas Admin)",
+        "description": "Executa consulta SQL nativa juntando payments e rentals ordenada pela data mais recente.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Relatório financeiro gerado com sucesso"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado (requer Admin)"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/pagamentos": {
+      "post": {
+        "tags": ["Pagamentos"],
+        "summary": "Registrar pagamento integral ou dividido (Dono do aluguel ou Admin)",
+        "description": "Permite 1 ou mais pagamentos para o mesmo aluguel em métodos diferentes. Calcula diárias + seguro ativo, bloqueia valores acima do saldo devedor e retorna o resumo_financeiro atualizado.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["rental_id", "valor", "data", "metodo_pagamento"],
+              "properties": {
+                "rental_id": {
+                  "type": "integer",
+                  "example": 11
+                },
+                "valor": {
+                  "type": "number",
+                  "example": 250.00
+                },
+                "data": {
+                  "type": "string",
+                  "example": "2026-11-15"
+                },
+                "metodo_pagamento": {
+                  "type": "string",
+                  "enum": ["PIX", "Cartão de Crédito", "Cartão de Débito", "Dinheiro"],
+                  "example": "PIX"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Pagamento registrado (retorna payment e resumo_financeiro)"
+          },
+          "400": {
+            "description": "Aluguel já quitado ou valor maior que o saldo devedor"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado (aluguel pertence a outro cliente)"
+          },
+          "404": {
+            "description": "Aluguel ou veículo não encontrado"
+          }
+        }
+      }
+    },
+    "/pagamentos/listar": {
+      "get": {
+        "tags": ["Pagamentos"],
+        "summary": "Listar todos os pagamentos (Apenas Admin)",
+        "description": "Retorna todos os registros da tabela payments.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de pagamentos"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado (requer Admin)"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/pagamentos/{id}": {
+      "get": {
+        "tags": ["Pagamentos"],
+        "summary": "Buscar pagamento por ID (Dono do aluguel ou Admin)",
+        "description": "Retorna os dados de um pagamento específico caso pertença ao usuário logado ou seja administrador.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do pagamento"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado"
+          },
+          "404": {
+            "description": "Pagamento não encontrado"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Pagamentos"],
+        "summary": "Atualizar pagamento (Apenas Admin)",
+        "description": "Permite ao administrador corrigir valor, data ou método de um lançamento financeiro.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "example": 1
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "valor": {
+                  "type": "number",
+                  "example": 810.00
+                },
+                "data": {
+                  "type": "string",
+                  "example": "2026-11-01"
+                },
+                "metodo_pagamento": {
+                  "type": "string",
+                  "example": "PIX"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pagamento atualizado com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado (requer Admin)"
+          },
+          "404": {
+            "description": "Pagamento não encontrado"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Pagamentos"],
+        "summary": "Deletar/estornar pagamento (Apenas Admin)",
+        "description": "Remove um registro financeiro do banco de dados.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pagamento removido com sucesso"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado (requer Admin)"
+          },
+          "404": {
+            "description": "Pagamento não encontrado"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/seguros/relatorio": {
+      "get": {
+        "tags": ["Seguros"],
+        "summary": "Relatório de seguros ativos (COUNT) (Apenas Admin)",
+        "description": "Conta quantas apólices estão com status 'ativo' no sistema.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contagem de seguros ativos retornada"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado (requer Admin)"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/seguros": {
+      "post": {
+        "tags": ["Seguros"],
+        "summary": "Contratar seguro para um aluguel (Dono do aluguel ou Admin)",
+        "description": "Cria uma apólice ativa vinculada ao aluguel informado.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["aluguel_id", "tipo_seguro", "valor"],
+              "properties": {
+                "aluguel_id": {
+                  "type": "integer",
+                  "example": 11
+                },
+                "tipo_seguro": {
+                  "type": "string",
+                  "example": "Completo"
+                },
+                "valor": {
+                  "type": "number",
+                  "example": 150.00
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Seguro contratado com sucesso"
+          },
+          "400": {
+            "description": "Erro ao registrar seguro"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado"
+          },
+          "404": {
+            "description": "Aluguel não encontrado"
+          }
+        }
+      }
+    },
+    "/seguros/{identificador}": {
+      "get": {
+        "tags": ["Seguros"],
+        "summary": "Consultar seguro por ID (Dono do aluguel ou Admin)",
+        "description": "Busca detalhes da apólice pelo ID.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "identificador",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Seguro encontrado"
+          },
+          "400": {
+            "description": "ID inválido"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado"
+          },
+          "404": {
+            "description": "Seguro não encontrado"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
+          }
+        }
+      }
+    },
+    "/seguros/{id}": {
+      "put": {
+        "tags": ["Seguros"],
+        "summary": "Editar dados do seguro (Apenas Admin)",
+        "description": "Atualiza tipo, valor ou status de uma apólice.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "example": 1
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tipo_seguro": {
+                  "type": "string",
+                  "example": "Completo"
+                },
+                "valor": {
+                  "type": "number",
+                  "example": 160.00
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["ativo", "inativo"],
+                  "example": "ativo"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Seguro atualizado com sucesso"
+          },
+          "400": {
+            "description": "Erro ao editar seguro"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado (requer Admin)"
+          },
+          "404": {
+            "description": "Seguro não encontrado"
+          }
+        }
+      }
+    },
+    "/seguros/cancelar/{id}": {
+      "patch": {
+        "tags": ["Seguros"],
+        "summary": "Cancelar seguro (Dono do aluguel ou Admin)",
+        "description": "Altera o status da apólice para 'inativo'.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Seguro cancelado com sucesso"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Acesso negado"
+          },
+          "404": {
+            "description": "Seguro não encontrado"
+          },
+          "500": {
+            "description": "Erro interno no servidor"
           }
         }
       }
