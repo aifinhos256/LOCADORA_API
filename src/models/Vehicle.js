@@ -4,6 +4,11 @@ class Vehicle extends Model {
     static init(sequelize) {
         super.init(
             {
+                id: {
+                    type: Sequelize.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
+                },
                 marca: {
                     type: Sequelize.STRING,
                     allowNull: false,

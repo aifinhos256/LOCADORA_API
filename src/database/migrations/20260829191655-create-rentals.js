@@ -4,20 +4,20 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('rentals', {
       id: {
-        type: Sequelize.UUID,
+        type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true,
-        defaultValue: Sequelize.UUIDV4
+        autoIncrement: true
       },
       usuario_id: {
-        type: Sequelize.UUID, 
+        type: Sequelize.INTEGER, 
         allowNull: false,
         references: { model: 'users', key: 'id' }, 
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
       veiculo_id: {
-        type: Sequelize.UUID, 
+        type: Sequelize.INTEGER, 
         allowNull: false,
         references: { model: 'vehicles', key: 'id' }, 
         onUpdate: 'CASCADE',

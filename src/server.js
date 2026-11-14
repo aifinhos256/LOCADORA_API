@@ -9,8 +9,12 @@ import swaggerUi from 'swagger-ui-express';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const swaggerDocument = require('../swagger-output.json');
+import cors from 'cors';
+
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 

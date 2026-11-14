@@ -1,12 +1,10 @@
 import Vehicle from '../models/Vehicle.js'; 
 import { Op } from 'sequelize';
-import crypto from 'node:crypto';
 
 class VehicleController {
     async create(req, res) {
         try {
             const vehicleToCreate = {
-                id: crypto.randomUUID(),
                 ...req.body
             };
 

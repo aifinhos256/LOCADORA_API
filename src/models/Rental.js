@@ -4,6 +4,19 @@ class Rental extends Model {
     static init(sequelize) {
         super.init(
             {
+                id: {
+                    type: Sequelize.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
+                },
+                veiculo_id: { 
+                    type: Sequelize.INTEGER,
+                    allowNull: false,
+                },
+                usuario_id: { 
+                    type: Sequelize.INTEGER,
+                    allowNull: false,
+                },
                 data_inicio: {
                     type: Sequelize.DATE,
                     allowNull: false,
