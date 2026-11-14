@@ -1,19 +1,27 @@
-const configuracaoLocal = {
-  dialect: 'postgres',
-  host: 'localhost',
-  username: 'postgres',
-  password: '8108',
-  database: 'usersdb',
-  define: {
-    timestamps: true,
-    underscored: true,
-  }
-};
+try {
+  process.loadEnvFile();
+} catch {
+  // No Render, as variáveis vêm direto do painel (Environment)
+}
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("A variável DATABASE_URL não foi encontrada no arquivo .env ou no servidor.");
+}
+
+const dbUrl = new URL(process.env.DATABASE_URL);
 
 const configuracaoNuvem = {
   dialect: 'postgres',
+  host: dbUrl.hostname,
+  port: dbUrl.port || 5432,
+  username: dbUrl.username,
+  password: decodeURIComponent(dbUrl.password),
+  database: dbUrl.pathname.replace('/', ''),
   dialectOptions: {
-    ssl: false 
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
   },
   define: {
     timestamps: true,
@@ -21,21 +29,9 @@ const configuracaoNuvem = {
   }
 };
 
-
-if (process.env.DATABASE_URL) {
-  const dbUrl = new URL(process.env.DATABASE_URL);
-  configuracaoNuvem.host = dbUrl.hostname;
-  configuracaoNuvem.port = dbUrl.port || 5432;
-  configuracaoNuvem.username = dbUrl.username;
-  configuracaoNuvem.password = dbUrl.password;
-  configuracaoNuvem.database = dbUrl.pathname.replace('/', '');
-}
-
-const ambienteAtual = process.env.DATABASE_URL ? configuracaoNuvem : configuracaoLocal;
-
 export default {
-  ...ambienteAtual,
-  development: ambienteAtual,
-  test: ambienteAtual,
-  production: ambienteAtual
+  ...configuracaoNuvem,
+  development: configuracaoNuvem,
+  test: configuracaoNuvem,
+  production: configuracaoNuvem
 };

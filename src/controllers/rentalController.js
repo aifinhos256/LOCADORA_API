@@ -82,3 +82,4 @@ class RentalController {
 }
 
 export default new RentalController();
+
