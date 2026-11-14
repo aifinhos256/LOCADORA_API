@@ -5,6 +5,8 @@ import routes from "./routes.js";
 import User from "./models/User.js";
 import Vehicle from "./models/Vehicle.js";
 import Rental from "./models/Rental.js";
+import Payment from "./models/Payment.js";
+import Insurance from "./models/Insurance.js";
 import swaggerUi from 'swagger-ui-express';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -26,7 +28,7 @@ app.get('/', (req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const sequelize = new Sequelize(config);
-const models = [User, Vehicle, Rental];
+const models = [User, Vehicle, Rental, Payment, Insurance];
 
 models.forEach(model => model.init(sequelize));
 

@@ -333,7 +333,7 @@
               <button class="action" onclick="apiRequest('GET', '/veiculos/todos')">GET /veiculos/todos</button>
             </div>
             <div class="form-grid">
-              <div><label>Buscar por ID, Marca ou Modelo</label><input type="text" id="searchVehicleIdent" placeholder="Ex: 1 ou Corolla ou Civic" /></div>
+              <div><label>Buscar por ID</label><input type="number" id="searchVehicleIdent" placeholder="Ex: 1" /></div>
             </div>
             <button class="action btn-secondary" onclick="searchVehicle()">GET /buscar/:identificador</button>
           </div>
@@ -620,9 +620,14 @@
         return;
       }
       const payload = parseJwt(token);
+      const savedRole = localStorage.getItem('locadora_role');
       if (payload) {
         const uid = payload.id || payload.userId || '?';
-        const role = payload.is_admin ? 'ADMINISTRADORA' : 'CLIENTE';
+        const role = payload.is_admin === true || savedRole === 'ADMIN'
+          ? 'ADMINISTRADOR'
+          : savedRole === 'CLIENTE'
+            ? 'CLIENTE'
+            : 'AUTENTICADO';
         el.innerHTML = `Status: <strong>Logado (ID: ${uid} | Perfil: ${role})</strong>`;
         if (uid !== '?') document.getElementById('rUserId').value = uid;
       } else {
@@ -668,6 +673,14 @@
         if (path === '/login' && res.ok && data.token) {
           token = data.token;
           localStorage.setItem('locadora_token', token);
+          if (path === '/login' && res.ok && data.token) {
+          token = data.token;
+          localStorage.setItem('locadora_token', token);
+          const emailDigitado = document.getElementById('loginEmail').value;
+          const isAdmin = data.user?.is_admin ?? (emailDigitado === 'grazy@admin.br');
+          localStorage.setItem('locadora_role', isAdmin ? 'ADMIN' : 'CLIENTE');
+          updateSessionUI();
+        }
           updateSessionUI();
         }
 
