@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel de Testes — LOCADORA_API</title>
+  <title>Painel Completo — LOCADORA_API (24 Rotas)</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -29,15 +29,14 @@
       line-height: 1.5;
     }
 
-    .container { max-width: 1280px; margin: 0 auto; }
+    .container { max-width: 1340px; margin: 0 auto; }
 
-    /* Header & Config */
     header {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 18px 22px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       display: flex;
       flex-wrap: wrap;
       gap: 16px;
@@ -45,28 +44,29 @@
       align-items: center;
     }
 
-    .title-area h1 { font-size: 1.35rem; display: flex; align-items: center; gap: 10px; }
+    .title-area h1 { font-size: 1.35rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
     .badge {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       padding: 3px 8px;
       border-radius: 999px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
     .badge-admin { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border: 1px solid var(--admin); }
     .badge-auth { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid var(--primary); }
     .badge-pub { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid var(--success); }
 
     .url-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .url-bar input { width: 320px; }
+    .url-bar input { width: 310px; }
 
-    /* Auth Status Banner */
     .session-bar {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 12px 18px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
@@ -77,30 +77,29 @@
     .session-info { font-size: 0.9rem; color: var(--muted); }
     .session-info strong { color: var(--text); }
 
-    /* Tabs */
-    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
     .tab-btn {
       background: var(--surface);
       color: var(--muted);
       border: 1px solid var(--border);
-      padding: 10px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
       transition: 0.2s;
+      font-size: 0.88rem;
     }
     .tab-btn:hover { color: var(--text); border-color: var(--primary); }
     .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-    /* Layout Grid */
     .main-grid {
       display: grid;
-      grid-template-columns: 1.35fr 1fr;
+      grid-template-columns: 1.4fr 1fr;
       gap: 20px;
       align-items: start;
     }
 
-    @media (max-width: 960px) {
+    @media (max-width: 980px) {
       .main-grid { grid-template-columns: 1fr; }
     }
 
@@ -111,36 +110,37 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 18px;
+      padding: 16px 18px;
     }
 
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       gap: 8px;
       flex-wrap: wrap;
     }
 
-    .card-header h3 { font-size: 1rem; }
+    .card-header h3 { font-size: 0.98rem; }
     .endpoint-tag {
-      font-family: monospace;
-      font-size: 0.8rem;
+      font-family: 'Consolas', monospace;
+      font-size: 0.78rem;
       background: var(--bg);
       padding: 3px 8px;
       border-radius: 6px;
       color: #cbd5e1;
+      border: 1px solid var(--surface-2);
     }
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 10px;
       margin-bottom: 12px;
     }
 
-    label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
+    label { display: block; font-size: 0.76rem; color: var(--muted); margin-bottom: 4px; }
     input, select {
       width: 100%;
       background: var(--bg);
@@ -148,7 +148,7 @@
       color: var(--text);
       padding: 8px 10px;
       border-radius: 6px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
     input:focus, select:focus { outline: none; border-color: var(--primary); }
 
@@ -161,16 +161,21 @@
       border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
+      transition: 0.15s;
     }
     button.action:hover { background: var(--primary-hover); }
     button.btn-admin { background: var(--admin); }
     button.btn-admin:hover { background: #9333ea; }
     button.btn-success { background: var(--success); color: #064e3b; }
+    button.btn-success:hover { background: #059669; color: #fff; }
+    button.btn-warning { background: var(--warning); color: #451a03; }
+    button.btn-warning:hover { background: #d97706; color: #fff; }
     button.btn-danger { background: var(--danger); }
+    button.btn-danger:hover { background: #dc2626; }
     button.btn-secondary { background: var(--surface-2); }
+    button.btn-secondary:hover { background: var(--border); }
 
-    /* Response Console */
     .console-card {
       position: sticky;
       top: 20px;
@@ -187,6 +192,7 @@
       margin-bottom: 10px;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--surface-2);
+      gap: 8px;
     }
 
     .status-pill {
@@ -194,7 +200,7 @@
       font-weight: 700;
       padding: 3px 10px;
       border-radius: 6px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       background: var(--surface-2);
     }
     .status-ok { background: rgba(16, 185, 129, 0.2); color: #34d399; }
@@ -202,21 +208,21 @@
 
     #resumo-box {
       display: none;
-      background: rgba(59, 130, 246, 0.12);
+      background: rgba(59, 130, 246, 0.14);
       border: 1px solid var(--primary);
       border-radius: 8px;
       padding: 10px 12px;
       margin-bottom: 12px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
     }
 
     pre {
       white-space: pre-wrap;
       word-break: break-word;
       font-family: 'Consolas', monospace;
-      font-size: 0.83rem;
+      font-size: 0.82rem;
       color: #e2e8f0;
-      max-height: 560px;
+      max-height: 580px;
       overflow-y: auto;
     }
   </style>
@@ -225,13 +231,16 @@
   <div class="container">
     <header>
       <div class="title-area">
-        <h1>LOCADORA_API <span class="badge badge-pub">Painel de Testes</span></h1>
-        <small style="color: var(--muted)">Validação de CRUD, JWT, Permissões Admin/Cliente, Pagamentos Divididos e Seguros</small>
+        <h1>LOCADORA_API <span class="badge badge-pub">24 Rotas Integradas</span></h1>
+        <small style="color: var(--muted)">Painel de Testes — Usuários, Veículos, Aluguéis, Pagamentos Divididos e Seguros</small>
       </div>
       <div class="url-bar">
         <input type="text" id="baseUrl" value="https://locadora-api-k59p.onrender.com" />
         <button class="action btn-secondary" onclick="setBaseUrl('https://locadora-api-k59p.onrender.com')">Render</button>
         <button class="action btn-secondary" onclick="setBaseUrl('http://localhost:3000')">Localhost</button>
+        <a href="/api-docs" target="_blank" style="text-decoration:none;">
+          <button class="action btn-secondary" type="button">Abrir Swagger</button>
+        </a>
       </div>
     </header>
 
@@ -240,79 +249,98 @@
         Status: <strong>Não autenticado (Visitante)</strong>
       </div>
       <div class="btn-row">
-        <button class="action btn-admin" onclick="quickLogin('grazynoronha08@alu.ufc.br', '123456')">Login Rápido Admin (Grazy)</button>
-        <button class="action" onclick="quickLogin('sofia@locadora.com', '123456')">Login Rápido Cliente (Sofia)</button>
+        <button class="action btn-admin" onclick="quickLogin('grazynoronha08@alu.ufc.br', '123456')">Login Admin (Grazy)</button>
+        <button class="action" onclick="quickLogin('sofia@locadora.com', '123456')">Login Cliente (Sofia)</button>
         <button class="action btn-danger" onclick="logout()">Sair</button>
       </div>
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="openTab('tab-users', this)">1. Login & Usuários</button>
-      <button class="tab-btn" onclick="openTab('tab-vehicles', this)">2. Veículos</button>
-      <button class="tab-btn" onclick="openTab('tab-rentals', this)">3. Aluguéis</button>
-      <button class="tab-btn" onclick="openTab('tab-payments', this)">4. Pagamentos</button>
-      <button class="tab-btn" onclick="openTab('tab-insurances', this)">5. Seguros</button>
+      <button class="tab-btn active" onclick="openTab('tab-users', this)">1. Usuários (5)</button>
+      <button class="tab-btn" onclick="openTab('tab-vehicles', this)">2. Veículos (5)</button>
+      <button class="tab-btn" onclick="openTab('tab-rentals', this)">3. Aluguéis (3)</button>
+      <button class="tab-btn" onclick="openTab('tab-payments', this)">4. Pagamentos (6)</button>
+      <button class="tab-btn" onclick="openTab('tab-insurances', this)">5. Seguros (5)</button>
     </div>
 
     <div class="main-grid">
-      <!-- COLUNA ESQUERDA: FORMULÁRIOS -->
       <div>
-        <!-- ABA 1: USUÁRIOS -->
+        <!-- ==================== ABA 1: USUÁRIOS (5 ROTAS) ==================== -->
         <div id="tab-users" class="panel active">
           <div class="card">
             <div class="card-header">
-              <h3>Autenticar Usuário</h3>
+              <h3>1. Autenticar Usuário (Login)</h3>
               <div><span class="badge badge-pub">Público</span> <span class="endpoint-tag">POST /login</span></div>
             </div>
             <div class="form-grid">
               <div><label>E-mail</label><input type="email" id="loginEmail" value="grazynoronha08@alu.ufc.br" /></div>
               <div><label>Senha</label><input type="password" id="loginPass" value="123456" /></div>
             </div>
-            <button class="action" onclick="login()">Entrar e Salvar Token</button>
+            <button class="action" onclick="login()">Entrar e Salvar Token JWT</button>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <h3>Cadastrar Novo Cliente</h3>
+              <h3>2. Cadastrar Novo Cliente</h3>
               <div><span class="badge badge-pub">Público</span> <span class="endpoint-tag">POST /cadastro/cliente</span></div>
             </div>
             <div class="form-grid">
-              <div><label>Nome</label><input type="text" id="regName" placeholder="Ex: Pedro Alves" /></div>
-              <div><label>Idade</label><input type="number" id="regAge" value="25" /></div>
-              <div><label>E-mail</label><input type="email" id="regEmail" placeholder="pedro@email.com" /></div>
-              <div><label>Senha</label><input type="password" id="regPass" value="123456" /></div>
+              <div><label>Nome</label><input type="text" id="regCliName" placeholder="Ex: Pedro Alves" /></div>
+              <div><label>Idade</label><input type="number" id="regCliAge" value="25" /></div>
+              <div><label>E-mail</label><input type="email" id="regCliEmail" placeholder="pedro@locadora.com" /></div>
+              <div><label>Senha</label><input type="password" id="regCliPass" value="123456" /></div>
             </div>
-            <button class="action btn-success" onclick="registerUser()">Cadastrar Cliente</button>
+            <button class="action btn-success" onclick="registerClient()">Cadastrar Cliente</button>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <h3>Gerenciar Usuários</h3>
-              <div><span class="badge badge-admin">Admin</span> <span class="endpoint-tag">/usuarios/...</span></div>
-            </div>
-            <div class="btn-row" style="margin-bottom: 12px;">
-              <button class="action btn-admin" onclick="apiRequest('GET', '/usuarios/todos')">Listar Todos Usuários</button>
+              <h3>3. Cadastrar Novo Administrador</h3>
+              <div><span class="badge badge-pub">Público</span> <span class="endpoint-tag">POST /cadastro/administrador</span></div>
             </div>
             <div class="form-grid">
-              <div><label>ID do Usuário para Deletar</label><input type="number" id="delUserId" placeholder="Ex: 4" /></div>
+              <div><label>Nome</label><input type="text" id="regAdmName" placeholder="Ex: Gerente Carlos" /></div>
+              <div><label>Idade</label><input type="number" id="regAdmAge" value="30" /></div>
+              <div><label>E-mail</label><input type="email" id="regAdmEmail" placeholder="carlos.admin@locadora.com" /></div>
+              <div><label>Senha</label><input type="password" id="regAdmPass" value="123456" /></div>
             </div>
-            <button class="action btn-danger" onclick="deleteUser()">Deletar Usuário (Próprio ou Admin)</button>
+            <button class="action btn-admin" onclick="registerAdmin()">Cadastrar Administrador</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>4 e 5. Listar Todos ou Deletar Usuário</h3>
+              <div><span class="badge badge-admin">Admin</span> <span class="badge badge-auth">Logado</span></div>
+            </div>
+            <div class="btn-row" style="margin-bottom: 12px;">
+              <button class="action btn-admin" onclick="apiRequest('GET', '/usuarios/todos')">GET /usuarios/todos (Admin)</button>
+            </div>
+            <div class="form-grid">
+              <div><label>ID do Usuário para Deletar</label><input type="number" id="delUserId" placeholder="Ex: 6" /></div>
+            </div>
+            <button class="action btn-danger" onclick="deleteUser()">DELETE /usuarios/deletar/:id</button>
           </div>
         </div>
 
-        <!-- ABA 2: VEÍCULOS -->
+        <!-- ==================== ABA 2: VEÍCULOS (5 ROTAS) ==================== -->
         <div id="tab-vehicles" class="panel">
           <div class="card">
             <div class="card-header">
-              <h3>Catálogo de Veículos</h3>
-              <div><span class="badge badge-pub">Público</span> <span class="endpoint-tag">GET /veiculos/todos</span></div>
+              <h3>1 e 2. Consultar Catálogo Público</h3>
+              <div><span class="badge badge-pub">Público</span></div>
             </div>
-            <button class="action" onclick="apiRequest('GET', '/veiculos/todos')">Listar Todos os Veículos</button>
+            <div class="btn-row" style="margin-bottom: 12px;">
+              <button class="action" onclick="apiRequest('GET', '/veiculos/todos')">GET /veiculos/todos</button>
+            </div>
+            <div class="form-grid">
+              <div><label>Buscar por ID, Marca ou Modelo</label><input type="text" id="searchVehicleIdent" placeholder="Ex: 1 ou Corolla ou Civic" /></div>
+            </div>
+            <button class="action btn-secondary" onclick="searchVehicle()">GET /buscar/:identificador</button>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <h3>Cadastrar Veículo (com Placa)</h3>
+              <h3>3. Cadastrar Novo Veículo</h3>
               <div><span class="badge badge-admin">Admin</span> <span class="endpoint-tag">POST /veiculos</span></div>
             </div>
             <div class="form-grid">
@@ -322,65 +350,77 @@
               <div><label>Placa (Obrigatória)</label><input type="text" id="vPlaca" placeholder="Ex: ABC1D23" /></div>
               <div><label>Valor Diária (R$)</label><input type="number" step="0.01" id="vValor" value="150.00" /></div>
             </div>
-            <button class="action btn-admin" onclick="createVehicle()">Cadastrar Veículo</button>
+            <button class="action btn-admin" onclick="createVehicle()">POST /veiculos</button>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <h3>Editar / Remover Veículo</h3>
-              <div><span class="badge badge-admin">Admin</span> <span class="endpoint-tag">/veiculos/:id</span></div>
+              <h3>4. Atualizar Veículo</h3>
+              <div><span class="badge badge-admin">Admin</span> <span class="endpoint-tag">PUT /atualizar/:id</span></div>
             </div>
             <div class="form-grid">
-              <div><label>ID do Veículo</label><input type="number" id="editVehicleId" placeholder="Ex: 1" /></div>
-              <div><label>Novo Valor Diária (R$)</label><input type="number" step="0.01" id="editVehicleValor" placeholder="230.00" /></div>
+              <div><label>ID do Veículo *</label><input type="number" id="editVehicleId" placeholder="Ex: 1" /></div>
+              <div><label>Marca (opcional)</label><input type="text" id="editVehicleMarca" placeholder="Ex: Toyota" /></div>
+              <div><label>Modelo (opcional)</label><input type="text" id="editVehicleModelo" placeholder="Ex: Corolla XEi" /></div>
+              <div><label>Ano (opcional)</label><input type="number" id="editVehicleAno" placeholder="2024" /></div>
+              <div><label>Placa (opcional)</label><input type="text" id="editVehiclePlaca" placeholder="POX1A23" /></div>
+              <div><label>Novo Valor Diária (opcional)</label><input type="number" step="0.01" id="editVehicleValor" placeholder="230.00" /></div>
             </div>
-            <div class="btn-row">
-              <button class="action btn-admin" onclick="updatVehicle()">Atualizar Diária</button>
-              <button class="action btn-danger" onclick="deleteVehicle()">Deletar Veículo</button>
+            <button class="action btn-warning" onclick="updateVehicle()">PUT /atualizar/:id</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>5. Remover Veículo</h3>
+              <div><span class="badge badge-admin">Admin</span> <span class="endpoint-tag">DELETE /veiculos/deletar/:id</span></div>
             </div>
+            <div class="form-grid">
+              <div><label>ID do Veículo</label><input type="number" id="delVehicleId" placeholder="Ex: 6" /></div>
+            </div>
+            <button class="action btn-danger" onclick="deleteVehicle()">DELETE /veiculos/deletar/:id</button>
           </div>
         </div>
 
-        <!-- ABA 3: ALUGUÉIS -->
+        <!-- ==================== ABA 3: ALUGUÉIS (3 ROTAS) ==================== -->
         <div id="tab-rentals" class="panel">
           <div class="card">
             <div class="card-header">
-              <h3>Criar Novo Aluguel</h3>
-              <div><span class="badge badge-auth">Logado</span> <span class="endpoint-tag">POST /alugueis</span></div>
+              <h3>1. Criar Novo Aluguel</h3>
+              <div><span class="badge badge-auth">Logado</span> <span class="endpoint-tag">POST /alugar</span></div>
             </div>
             <div class="form-grid">
-              <div><label>ID Usuário (auto-preenchido ao logar)</label><input type="number" id="rUserId" value="1" /></div>
-              <div><label>ID Veículo (1 a 5)</label><input type="number" id="rVehicleId" value="5" /></div>
+              <div><label>ID Usuário (auto-preenchido)</label><input type="number" id="rUserId" value="1" /></div>
+              <div><label>ID Veículo</label><input type="number" id="rVehicleId" value="5" /></div>
               <div><label>Data Início</label><input type="date" id="rInicio" /></div>
               <div><label>Data Fim</label><input type="date" id="rFim" /></div>
             </div>
-            <button class="action" onclick="createRental()">Registrar Aluguel</button>
+            <button class="action btn-success" onclick="createRental()">POST /alugar</button>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <h3>Consultas e Cancelamento de Aluguel</h3>
-              <div><span class="badge badge-auth">Logado / Admin</span></div>
+              <h3>2 e 3. Listar Todos ou Cancelar Aluguel</h3>
+              <div><span class="badge badge-admin">Admin</span> <span class="badge badge-auth">Dono/Admin</span></div>
             </div>
             <div class="btn-row" style="margin-bottom: 12px;">
-              <button class="action btn-admin" onclick="apiRequest('GET', '/alugueis/todos')">Listar Todos (Admin)</button>
+              <button class="action btn-admin" onclick="apiRequest('GET', '/alugueis/todos')">GET /alugueis/todos (Admin)</button>
             </div>
             <div class="form-grid">
               <div><label>ID do Aluguel para Cancelar</label><input type="number" id="cancelRentalId" placeholder="Ex: 11" /></div>
             </div>
-            <button class="action btn-danger" onclick="cancelRental()">Cancelar Aluguel (PATCH)</button>
+            <button class="action btn-danger" onclick="cancelRental()">DELETE /alugueis/cancelar/:id</button>
           </div>
         </div>
 
-        <!-- ABA 4: PAGAMENTOS -->
+        <!-- ==================== ABA 4: PAGAMENTOS (6 ROTAS) ==================== -->
         <div id="tab-payments" class="panel">
           <div class="card">
             <div class="card-header">
-              <h3>Registrar Pagamento (À Vista ou Dividido)</h3>
-              <div><span class="badge badge-auth">Logado</span> <span class="endpoint-tag">POST /pagamentos</span></div>
+              <h3>1. Registrar Pagamento (Integral ou Dividido)</h3>
+              <div><span class="badge badge-auth">Dono/Admin</span> <span class="endpoint-tag">POST /pagamentos</span></div>
             </div>
-            <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px;">
-              Dica: Crie um aluguel novo (ex: ID 11), lance metade do valor no <strong>Dinheiro</strong> e depois lance o restante no <strong>Cartão</strong> para testar a quitação parcial.
+            <p style="font-size: 0.79rem; color: var(--muted); margin-bottom: 10px;">
+              Soma automaticamente as diárias do carro + seguros ativos vinculados ao aluguel. Você pode lançar em 2 ou mais formas de pagamento até quitar.
             </p>
             <div class="form-grid">
               <div><label>ID do Aluguel (rental_id)</label><input type="number" id="pRentalId" placeholder="Ex: 11" /></div>
@@ -396,34 +436,63 @@
                 </select>
               </div>
             </div>
-            <button class="action btn-success" onclick="createPayment()">Registrar Pagamento</button>
+            <button class="action btn-success" onclick="createPayment()">POST /pagamentos</button>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <h3>Relatórios e Consultas Financeiras</h3>
+              <h3>2 e 3. Relatório SQL (JOIN) & Listagem Geral</h3>
               <div><span class="badge badge-admin">Admin</span></div>
             </div>
-            <div class="btn-row" style="margin-bottom: 12px;">
-              <button class="action btn-admin" onclick="apiRequest('GET', '/pagamentos/relatorio')">Relatório SQL (JOIN)</button>
-              <button class="action btn-admin" onclick="apiRequest('GET', '/pagamentos/listar')">Listar Todos Pagamentos</button>
+            <div class="btn-row">
+              <button class="action btn-admin" onclick="apiRequest('GET', '/pagamentos/relatorio')">GET /pagamentos/relatorio (SQL JOIN)</button>
+              <button class="action btn-admin" onclick="apiRequest('GET', '/pagamentos/todos')">GET /pagamentos/todos</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>4 e 5. Buscar por ID ou Deletar Pagamento</h3>
+              <div><span class="badge badge-auth">GET Dono/Admin</span> <span class="badge badge-admin">DELETE Admin</span></div>
             </div>
             <div class="form-grid">
               <div><label>ID do Pagamento</label><input type="number" id="pSearchId" placeholder="Ex: 1" /></div>
             </div>
             <div class="btn-row">
-              <button class="action" onclick="getPaymentById()">Buscar por ID (Dono/Admin)</button>
-              <button class="action btn-danger" onclick="deletePayment()">Deletar Pagamento (Admin)</button>
+              <button class="action" onclick="getPaymentById()">GET /pagamentos/:id</button>
+              <button class="action btn-danger" onclick="deletePayment()">DELETE /pagamentos/:id</button>
             </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>6. Atualizar Pagamento</h3>
+              <div><span class="badge badge-admin">Admin</span> <span class="endpoint-tag">PUT /pagamentos/:id</span></div>
+            </div>
+            <div class="form-grid">
+              <div><label>ID do Pagamento *</label><input type="number" id="pUpdId" placeholder="Ex: 1" /></div>
+              <div><label>Novo Valor (R$)</label><input type="number" step="0.01" id="pUpdValor" placeholder="Ex: 810.00" /></div>
+              <div><label>Nova Data</label><input type="date" id="pUpdData" /></div>
+              <div>
+                <label>Novo Método</label>
+                <select id="pUpdMetodo">
+                  <option value="PIX">PIX</option>
+                  <option value="Cartão de Crédito">Cartão de Crédito</option>
+                  <option value="Cartão de Débito">Cartão de Débito</option>
+                  <option value="Dinheiro">Dinheiro</option>
+                </select>
+              </div>
+            </div>
+            <button class="action btn-warning" onclick="updatePayment()">PUT /pagamentos/:id</button>
           </div>
         </div>
 
-        <!-- ABA 5: SEGUROS -->
+        <!-- ==================== ABA 5: SEGUROS (5 ROTAS) ==================== -->
         <div id="tab-insurances" class="panel">
           <div class="card">
             <div class="card-header">
-              <h3>Contratar Seguro para Aluguel</h3>
-              <div><span class="badge badge-auth">Logado</span> <span class="endpoint-tag">POST /seguros</span></div>
+              <h3>1. Contratar Seguro para Aluguel</h3>
+              <div><span class="badge badge-auth">Dono/Admin</span> <span class="endpoint-tag">POST /seguros</span></div>
             </div>
             <div class="form-grid">
               <div><label>ID do Aluguel (aluguel_id)</label><input type="number" id="sAluguelId" placeholder="Ex: 11" /></div>
@@ -438,41 +507,68 @@
               </div>
               <div><label>Valor (R$)</label><input type="number" step="0.01" id="sValor" value="120.00" /></div>
             </div>
-            <button class="action btn-success" onclick="createInsurance()">Contratar Seguro</button>
+            <button class="action btn-success" onclick="createInsurance()">POST /seguros</button>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <h3>Consultar, Cancelar ou Gerar Relatório de Seguros</h3>
-              <div><span class="badge badge-auth">Logado</span> <span class="badge badge-admin">Relatório Admin</span></div>
+              <h3>2, 3 e 4. Relatório, Consulta e Cancelamento</h3>
+              <div><span class="badge badge-admin">Relatório Admin</span> <span class="badge badge-auth">Dono/Admin</span></div>
             </div>
             <div class="btn-row" style="margin-bottom: 12px;">
-              <button class="action btn-admin" onclick="apiRequest('GET', '/seguros/relatorio')">Relatório Seguros Ativos (COUNT)</button>
+              <button class="action btn-admin" onclick="apiRequest('GET', '/seguro/relatorio')">GET /seguro/relatorio (COUNT Ativos)</button>
             </div>
             <div class="form-grid">
               <div><label>ID do Seguro</label><input type="number" id="sId" placeholder="Ex: 1" /></div>
             </div>
             <div class="btn-row">
-              <button class="action" onclick="showInsurance()">Buscar Seguro (GET)</button>
-              <button class="action btn-danger" onclick="cancelInsurance()">Cancelar Seguro (PATCH)</button>
+              <button class="action" onclick="showInsurance()">GET /seguros/:identificador</button>
+              <button class="action btn-danger" onclick="cancelInsurance()">PATCH /seguros/cancelar/:id</button>
             </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>5. Editar Apólice de Seguro</h3>
+              <div><span class="badge badge-admin">Admin</span> <span class="endpoint-tag">PUT /seguros/:id</span></div>
+            </div>
+            <div class="form-grid">
+              <div><label>ID do Seguro *</label><input type="number" id="sUpdId" placeholder="Ex: 1" /></div>
+              <div>
+                <label>Tipo de Seguro</label>
+                <select id="sUpdTipo">
+                  <option value="Completo">Completo</option>
+                  <option value="Terceiros">Terceiros</option>
+                  <option value="Vidros e Roubo">Vidros e Roubo</option>
+                  <option value="Básico">Básico</option>
+                </select>
+              </div>
+              <div><label>Valor (R$)</label><input type="number" step="0.01" id="sUpdValor" placeholder="150.00" /></div>
+              <div>
+                <label>Status</label>
+                <select id="sUpdStatus">
+                  <option value="ativo">ativo</option>
+                  <option value="inativo">inativo</option>
+                </select>
+              </div>
+            </div>
+            <button class="action btn-warning" onclick="updateInsurance()">PUT /seguros/:id</button>
           </div>
         </div>
       </div>
 
-      <!-- COLUNA DIREITA: RESPOSTA DA API -->
+      <!-- ==================== CONSOLE DE RESPOSTA ==================== -->
       <div class="console-card">
         <div class="console-top">
-          <div>
-            <strong id="reqInfo">Aguardando requisição...</strong>
-          </div>
+          <strong id="reqInfo">Aguardando requisição...</strong>
           <span id="statusBadge" class="status-pill">---</span>
         </div>
 
         <div id="resumo-box"></div>
 
         <pre id="responseOutput">{
-  "dica": "Clique em 'Login Rápido Admin' no topo para autenticar e testar todas as rotas."
+  "status": "Pronto para testar todas as 24 rotas",
+  "dica": "Use os botões 'Login Admin (Grazy)' ou 'Login Cliente (Sofia)' no topo para autenticar automaticamente."
 }</pre>
       </div>
     </div>
@@ -481,13 +577,20 @@
   <script>
     let token = localStorage.getItem('locadora_token') || '';
 
-    // Inicializa datas padrão (hoje e +3 dias)
+    // Se estiver rodando direto pelo Render/localhost, usa a própria origem automaticamente
+    if (window.location.origin && window.location.origin.startsWith('http')) {
+      document.getElementById('baseUrl').value = window.location.origin;
+    }
+
+    // Datas padrão (hoje e +3 dias)
     const today = new Date();
     const plus3 = new Date(today);
     plus3.setDate(today.getDate() + 3);
-    document.getElementById('rInicio').value = today.toISOString().split('T')[0];
+    const todayStr = today.toISOString().split('T')[0];
+    document.getElementById('rInicio').value = todayStr;
     document.getElementById('rFim').value = plus3.toISOString().split('T')[0];
-    document.getElementById('pData').value = today.toISOString().split('T')[0];
+    document.getElementById('pData').value = todayStr;
+    document.getElementById('pUpdData').value = todayStr;
 
     function setBaseUrl(url) {
       document.getElementById('baseUrl').value = url;
@@ -535,7 +638,7 @@
       document.getElementById('reqInfo').innerText = 'Sessão encerrada';
       document.getElementById('statusBadge').innerText = 'LOGOUT';
       document.getElementById('statusBadge').className = 'status-pill';
-      document.getElementById('responseOutput').innerText = '{"mensagem": "Token removido com sucesso."}';
+      document.getElementById('responseOutput').innerText = '{"mensagem": "Token JWT removido com sucesso."}';
     }
 
     async function apiRequest(method, path, body = null) {
@@ -562,24 +665,22 @@
         badge.innerText = `${res.status} ${res.statusText}`;
         badge.className = res.ok ? 'status-pill status-ok' : 'status-pill status-err';
 
-        // Salva token automaticamente se for login
         if (path === '/login' && res.ok && data.token) {
           token = data.token;
           localStorage.setItem('locadora_token', token);
           updateSessionUI();
         }
 
-        // Destaca o resumo financeiro no pagamento dividido
         if (data.resumo_financeiro) {
           const r = data.resumo_financeiro;
           const box = document.getElementById('resumo-box');
           box.style.display = 'block';
           box.innerHTML = `
-            <strong>Resumo Financeiro do Aluguel:</strong><br/>
-            Total do Contrato: <strong>R$ ${Number(r.valor_total_aluguel).toFixed(2)}</strong> | 
-            Total Pago: <strong>R$ ${Number(r.total_pago).toFixed(2)}</strong> | 
-            Falta Pagar: <strong>R$ ${Number(r.falta_pagar).toFixed(2)}</strong> | 
-            Status: <strong>${r.quitado ? 'QUITADO ✅' : 'PAGAMENTO PARCIAL ⏳'}</strong>
+            <strong>Resumo Financeiro do Contrato:</strong><br/>
+            Total: <strong>R$ ${Number(r.valor_total_aluguel).toFixed(2)}</strong> | 
+            Pago: <strong>R$ ${Number(r.total_pago).toFixed(2)}</strong> | 
+            Restante: <strong>R$ ${Number(r.falta_pagar).toFixed(2)}</strong> | 
+            Status: <strong>${r.quitado ? 'QUITADO' : 'PARCIAL'}</strong>
           `;
         }
 
@@ -590,13 +691,12 @@
         badge.className = 'status-pill status-err';
         document.getElementById('responseOutput').innerText = JSON.stringify({
           erro: 'Falha ao conectar com a API.',
-          detalhe: err.message,
-          dica: 'Se a API no Render estava dormindo, aguarde 30 segundos e tente novamente.'
+          detalhe: err.message
         }, null, 2);
       }
     }
 
-    // Funções dos formulários
+    // 1. USUÁRIOS
     function quickLogin(email, password) {
       document.getElementById('loginEmail').value = email;
       document.getElementById('loginPass').value = password;
@@ -610,18 +710,33 @@
       });
     }
 
-    function registerUser() {
+    function registerClient() {
       apiRequest('POST', '/cadastro/cliente', {
-        name: document.getElementById('regName').value,
-        age: Number(document.getElementById('regAge').value),
-        email: document.getElementById('regEmail').value,
-        password: document.getElementById('regPass').value,
+        name: document.getElementById('regCliName').value,
+        age: Number(document.getElementById('regCliAge').value),
+        email: document.getElementById('regCliEmail').value,
+        password: document.getElementById('regCliPass').value,
+      });
+    }
+
+    function registerAdmin() {
+      apiRequest('POST', '/cadastro/administrador', {
+        name: document.getElementById('regAdmName').value,
+        age: Number(document.getElementById('regAdmAge').value),
+        email: document.getElementById('regAdmEmail').value,
+        password: document.getElementById('regAdmPass').value,
       });
     }
 
     function deleteUser() {
       const id = document.getElementById('delUserId').value;
       apiRequest('DELETE', `/usuarios/deletar/${id}`);
+    }
+
+    // 2. VEÍCULOS
+    function searchVehicle() {
+      const ident = encodeURIComponent(document.getElementById('searchVehicleIdent').value);
+      apiRequest('GET', `/buscar/${ident}`);
     }
 
     function createVehicle() {
@@ -636,16 +751,28 @@
 
     function updateVehicle() {
       const id = document.getElementById('editVehicleId').value;
-      apiRequest('PUT', `/atualizar/${id}`, {
-        valor: Number(document.getElementById('editVehicleValor').value),
-      });
+      const body = {};
+      const marca = document.getElementById('editVehicleMarca').value;
+      const modelo = document.getElementById('editVehicleModelo').value;
+      const ano = document.getElementById('editVehicleAno').value;
+      const placa = document.getElementById('editVehiclePlaca').value;
+      const valor = document.getElementById('editVehicleValor').value;
+
+      if (marca) body.marca = marca;
+      if (modelo) body.modelo = modelo;
+      if (ano) body.ano = Number(ano);
+      if (placa) body.placa = placa;
+      if (valor) body.valor = Number(valor);
+
+      apiRequest('PUT', `/atualizar/${id}`, body);
     }
 
     function deleteVehicle() {
-      const id = document.getElementById('editVehicleId').value;
+      const id = document.getElementById('delVehicleId').value;
       apiRequest('DELETE', `/veiculos/deletar/${id}`);
     }
 
+    // 3. ALUGUÉIS
     function createRental() {
       apiRequest('POST', '/alugar', {
         usuario_id: Number(document.getElementById('rUserId').value),
@@ -659,7 +786,8 @@
       const id = document.getElementById('cancelRentalId').value;
       apiRequest('DELETE', `/alugueis/cancelar/${id}`);
     }
-    
+
+    // 4. PAGAMENTOS
     function createPayment() {
       apiRequest('POST', '/pagamentos', {
         rental_id: Number(document.getElementById('pRentalId').value),
@@ -679,6 +807,19 @@
       apiRequest('DELETE', `/pagamentos/${id}`);
     }
 
+    function updatePayment() {
+      const id = document.getElementById('pUpdId').value;
+      const body = {
+        data: document.getElementById('pUpdData').value,
+        metodo_pagamento: document.getElementById('pUpdMetodo').value,
+      };
+      const valor = document.getElementById('pUpdValor').value;
+      if (valor) body.valor = Number(valor);
+
+      apiRequest('PUT', `/pagamentos/${id}`, body);
+    }
+
+    // 5. SEGUROS
     function createInsurance() {
       apiRequest('POST', '/seguros', {
         aluguel_id: Number(document.getElementById('sAluguelId').value),
@@ -695,6 +836,18 @@
     function cancelInsurance() {
       const id = document.getElementById('sId').value;
       apiRequest('PATCH', `/seguros/cancelar/${id}`);
+    }
+
+    function updateInsurance() {
+      const id = document.getElementById('sUpdId').value;
+      const body = {
+        tipo_seguro: document.getElementById('sUpdTipo').value,
+        status: document.getElementById('sUpdStatus').value,
+      };
+      const valor = document.getElementById('sUpdValor').value;
+      if (valor) body.valor = Number(valor);
+
+      apiRequest('PUT', `/seguros/${id}`, body);
     }
 
     updateSessionUI();
