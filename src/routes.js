@@ -44,6 +44,6 @@ router.get('/seguros/:identificador',  authMiddleware, InsuranceController.show)
 router.put('/seguros/:id', authMiddleware, adminMiddleware, InsuranceController.update);
 router.patch('/seguros/cancelar/:id', authMiddleware, adminMiddleware, InsuranceController.cancel);
 
-//ROTA BUSCA
+//ROTA DE BUSCA
 router.get('/veiculos/busca', VehicleController.search);
 export default router
