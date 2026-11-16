@@ -1,8 +1,7 @@
 import Vehicle from '../models/Vehicle.js'; 
-import Rental from '../models/Rental.js'; // Ajuste o caminho se necessário para o model de locações
+import Rental from '../models/Rental.js'; 
 import { Op } from 'sequelize';
-import { sequelize } from '../config/database.js'; // Ajuste para o caminho onde exporta a instância do sequelize do seu projeto
-
+import { sequelize } from '../config/database.js';
 class VehicleController {
     async create(req, res) {
         try {
@@ -51,7 +50,7 @@ class VehicleController {
         }
     }
 
-    // NOVO MÉTODO DE BUSCA COM LIKE, JOIN E COUNT
+    //MÉTODO DE BUSCA COM LIKE, JOIN E COUNT
     async search(req, res) {
         try {
             const { termo } = req.query; // Exemplo de uso: /vehicles/search?termo=Fiat
