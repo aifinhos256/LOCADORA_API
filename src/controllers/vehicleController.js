@@ -1,5 +1,7 @@
 import Vehicle from '../models/Vehicle.js'; 
+import Rental from '../models/Rental.js'; // Ajuste o caminho se necessário para o model de locações
 import { Op } from 'sequelize';
+import { sequelize } from '../config/database.js'; // Ajuste para o caminho onde exporta a instância do sequelize do seu projeto
 
 class VehicleController {
     async create(req, res) {
@@ -17,7 +19,6 @@ class VehicleController {
         }
     }
 
-    
     async index(req, res) {
         try {
             const vehicles = await Vehicle.findAll();
@@ -47,6 +48,38 @@ class VehicleController {
             return res.status(200).json(vehicle);
         } catch (error) {
             return res.status(500).json({ error: 'Erro ao buscar veículo.' });
+        }
+    }
+
+    // NOVO MÉTODO DE BUSCA COM LIKE, JOIN E COUNT
+    async search(req, res) {
+        try {
+            const { termo } = req.query; // Exemplo de uso: /vehicles/search?termo=Fiat
+
+            const vehicles = await Vehicle.findAndCountAll({
+                where: {
+                    nome: { // Substitua 'nome' pelo campo real do seu model (ex: modelo, marca, etc.)
+                        [Op.like]: `%${termo || ''}%`
+                    }
+                },
+                include: [
+                    {
+                        model: Rental,
+                        as: 'rentals', // Verifique se o alias ('as') na associação do model é 'rentals' ou outro
+                        attributes: []
+                    }
+                ],
+                attributes: {
+                    include: [
+                        [sequelize.fn('COUNT', sequelize.col('rentals.id')), 'total_locacoes']
+                    ]
+                },
+                group: ['Vehicle.id'] // Necessário para agrupamento ao usar COUNT com JOIN
+            });
+
+            return res.status(200).json(vehicles);
+        } catch (error) {
+            return res.status(500).json({ error: 'Erro ao buscar veículos.', details: error.message });
         }
     }
 
